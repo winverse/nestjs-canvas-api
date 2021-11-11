@@ -12,7 +12,7 @@ export class ImageController {
   }
 
   @Post()
-  drawCanvas(@Body() imageData: DrawCanvasDto): string {
+  drawCanvas(@Body() imageData: DrawCanvasDto): Promise<string> {
     return this.imageService.drawCanvas(imageData);
   }
 }

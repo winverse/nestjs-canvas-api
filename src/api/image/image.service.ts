@@ -1,8 +1,6 @@
-import * as path from 'path';
-import * as fs from 'fs';
-
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import DrawCanvasDto from './dto/draw-canvas.dto';
+import Canvas from './utils/canvas';
 
 @Injectable()
 export class ImageService {
@@ -10,20 +8,9 @@ export class ImageService {
     return 'Hello';
   }
 
-  drawCanvas(imageData: DrawCanvasDto): string {
-    const { text, typeNumber, backgroundColor } = imageData;
-
-    console.log(__dirname);
-
-    const backgroundImagePath = path.resolve(
-      process.cwd(),
-      `./images/cover-${backgroundColor}-type${typeNumber}.png`,
-    );
-
-    if (!fs.existsSync(backgroundImagePath)) {
-      throw new NotFoundException('Not found background image');
-    }
-
-    return 'drawCanvas';
+  async drawCanvas(imageData: DrawCanvasDto): Promise<string> {
+    const canvas = Canvas.createCanvas(imageData);
+    const filepath = await canvas.drawCanvas();
+    return filepath;
   }
 }

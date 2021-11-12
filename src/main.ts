@@ -6,7 +6,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import hbs from 'handlebars';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 import { ApiModule } from './api/api.module';
 
@@ -17,15 +17,13 @@ async function bootstrap() {
   );
 
   app.useStaticAssets({
-    root: path.resolve(process.cwd(), 'public'),
+    root: [
+      path.resolve(process.cwd(), 'public'),
+      path.resolve(process.cwd(), 'static'),
+    ],
   });
 
-  app.setViewEngine({
-    root: path.resolve(process.cwd(), 'views'),
-    engine: {
-      handlebars: hbs,
-    },
-  });
+  app.useWebSocketAdapter(new IoAdapter(app));
 
   app.setGlobalPrefix('/api');
 

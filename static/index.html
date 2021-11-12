@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>NestJs socket canvas api</title>
+    <link href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="http://localhost:8000/websockets/socket.io.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0
+      }
+
+      body {
+        background: red;
+      }
+      #canvas {
+        width: 100%;
+        height: 100vh;
+        background: gold;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="v-app">
+      <!-- <canvas id="canvas"></canvas> -->
+      <form>
+        <input v-model="text" type="text" />
+        <button type="submit" @click.prevent="sendMessage()">Send</button>
+      </form>
+      <p>
+        <ul>
+          <li v-for="msg of messages">{{ msg }}</li>
+        </ul>
+      </p>
+    </div>
+    <script>
+      var app = new Vue({
+        el: '#v-app',
+        data: {
+          text: '',
+          messages: [],
+          socket: null,
+        },
+        methods: {
+          sendMessage() {
+            this.socket.emit('msgToServer', this.text);
+            this.text = '';
+          },
+          receiveMessage(msg) {
+            console.log('msg', msg);
+            this.messages.push(msg);
+          },
+          connect() {
+            console.log('created!')
+            this.socket = io('http://localhost:8000', { path: '/websockets'})
+            this.socket.on('msgToClient', (msg) => {
+              this.receiveMessage(msg);
+            })
+          }
+        },
+      })
+
+      app.connect();
+    </script>
+  </body>
+</html>

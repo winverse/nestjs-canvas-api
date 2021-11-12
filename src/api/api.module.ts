@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ApiController } from './api.controller';
 import { ApiService } from './api.service';
-import { ImageModule } from './image/image.module';
+
+import { RoomsModule } from './rooms/rooms.module';
 
 @Module({
-  imports: [ImageModule],
+  imports: [RoomsModule],
   controllers: [ApiController],
   providers: [ApiService],
 })

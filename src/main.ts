@@ -17,10 +17,7 @@ async function bootstrap() {
   );
 
   app.useStaticAssets({
-    root: [
-      path.resolve(process.cwd(), 'public'),
-      path.resolve(process.cwd(), 'static'),
-    ],
+    root: path.resolve(process.cwd(), 'static'),
   });
 
   app.useWebSocketAdapter(new IoAdapter(app));

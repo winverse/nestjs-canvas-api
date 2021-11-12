@@ -19,13 +19,13 @@
       #canvas {
         width: 100%;
         height: 100vh;
-        background: gold;
+        background: white;
       }
     </style>
   </head>
   <body>
     <div id="v-app">
-      <!-- <canvas id="canvas"></canvas> -->
+      <canvas id="canvas"></canvas>
       <form>
         <input v-model="text" type="text" />
         <button type="submit" @click.prevent="sendMessage()">Send</button>
@@ -43,27 +43,67 @@
           text: '',
           messages: [],
           socket: null,
+          lastPoint: null,
+          ctx: null,
         },
         methods: {
-          sendMessage() {
-            this.socket.emit('msgToServer', this.text);
-            this.text = '';
+          mouseMove(e) {
+            if (e.buttons) {
+            let { lastPoint, ctx } = this;
+              if (!lastPoint) {
+                this.lastPoint = { x: e.offsetX, y: e.offsetY };
+                return;
+              }
+              
+              ctx.beginPath();
+              ctx.moveTo(lastPoint.x, lastPoint.y);
+              ctx.lineTo(e.offsetX, e.offsetY);
+              ctx.strokeStyle = 'black';
+              ctx.lineWidth = 5;
+              ctx.lineCap = 'round';
+              ctx.stroke();
+              this.lastPoint = { x: e.offsetX, y: e.offsetY };
+            }
           },
-          receiveMessage(msg) {
-            console.log('msg', msg);
-            this.messages.push(msg);
+          lastPointReset(e) {
+            this.lastPoint = null;
+          },
+          onKeyDown(e) {
+            let canvas = document.querySelector('canvas');
+
+            if (e.key === 'Backspace') {
+              this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+          },
+          getCanvas() {
+            let canvas = document.querySelector('canvas');
+            const context = canvas.getContext('2d');
+
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            this.ctx = context;
+            console.log('created canvas!');
           },
           connect() {
-            console.log('created!')
             this.socket = io('http://localhost:8000', { path: '/websockets'})
             this.socket.on('msgToClient', (msg) => {
               this.receiveMessage(msg);
             })
-          }
+            console.log('connected!');
+          },
         },
       })
 
       app.connect();
+      app.getCanvas();
+
+      window.onresize = app.getCanvas;
+      window.onmousemove = app.mouseMove;
+      window.onmouseup = app.lastPointReset;
+      window.onkeydown = app.onKeyDown;
+
     </script>
   </body>
 </html>

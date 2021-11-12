@@ -77,7 +77,8 @@ class Canvas {
       ctx.lineWidth = 60;
       ctx.beginPath();
       ctx.lineTo(0, 40);
-      ctx.lineTo(150, 40);
+      // ctx.lineTo(150, 40);
+      // ctx.arc();
       ctx.stroke();
 
       // save File

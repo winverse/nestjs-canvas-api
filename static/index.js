@@ -1,28 +1,45 @@
-var app = new Vue({
+const app = new Vue({
   el: '#v-app',
   data: {
     text: '',
     messages: [],
     socket: null,
+    ctx: null, // canvas context
     lastPoint: null,
-    ctx: null,
+    connections: [], // { id: uuid, name: string }
+    color: 'black',
   },
   methods: {
+    broadcast(drawInfo) {
+      this.socket.emit('drawInfo', drawInfo);
+    },
+    draw(drawInfo) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(drawInfo.lastPoint.x, drawInfo.lastPoint.y);
+      this.ctx.lineTo(drawInfo.x, drawInfo.y);
+      this.ctx.strokeStyle = drawInfo.color;
+      this.ctx.lineWidth = 5;
+      this.ctx.lineCap = 'round';
+      this.ctx.stroke();
+    },
     mouseMove(e) {
       if (e.buttons) {
-      let { lastPoint, ctx } = this;
+        let { lastPoint, ctx } = this;
         if (!lastPoint) {
           this.lastPoint = { x: e.offsetX, y: e.offsetY };
           return;
         }
-        
-        ctx.beginPath();
-        ctx.moveTo(lastPoint.x, lastPoint.y);
-        ctx.lineTo(e.offsetX, e.offsetY);
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 5;
-        ctx.lineCap = 'round';
-        ctx.stroke();
+
+        const drawInfo = {
+          lastPoint,
+          x: e.offsetX,
+          y: e.offsetY,
+          color: this.color,
+        };
+
+        this.draw(drawInfo);
+        this.broadcast(drawInfo);
+
         this.lastPoint = { x: e.offsetX, y: e.offsetY };
       }
     },
@@ -36,7 +53,7 @@ var app = new Vue({
         this.ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
     },
-    getCanvas() {
+    createCanvas() {
       let canvas = document.querySelector('canvas');
       const context = canvas.getContext('2d');
 
@@ -45,22 +62,26 @@ var app = new Vue({
 
       context.clearRect(0, 0, canvas.width, canvas.height);
       this.ctx = context;
-      console.log('created canvas!');
     },
     connect() {
-      this.socket = io('http://localhost:8000', { path: '/websockets'})
-      this.socket.on('msgToClient', (msg) => {
-        this.receiveMessage(msg);
-      })
-      console.log('connected!');
+      const socket = io('http://localhost:8000', { path: '/websockets/rooms' });
+      this.socket = socket;
+
+      socket.emit('joinRoom');
+      socket.on('draw', drawInfo => {
+        this.draw(drawInfo.data);
+      });
+    },
+    disconnect() {
+      console.log('disConnected');
     },
   },
-})
+});
 
 app.connect();
-app.getCanvas();
+app.createCanvas();
 
-window.onresize = app.getCanvas;
+window.onresize = app.createCanvas;
 window.onmousemove = app.mouseMove;
 window.onmouseup = app.lastPointReset;
-window.onkeydown = app.onKeyDown;s
+window.onkeydown = app.onKeyDown;

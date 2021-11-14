@@ -9,9 +9,8 @@ import {
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway(8000, {
-  path: '/websockets',
+  path: '/websockets/rooms',
   serverClient: true,
-  namespace: '/',
   cors: true,
 })
 export class RoomsGateway
@@ -28,8 +27,8 @@ export class RoomsGateway
     console.log('handleDisconnect');
   }
 
-  @SubscribeMessage('msgToServer')
-  handleMessage(client: Socket, payload: string): WsResponse<string> {
-    return { event: 'msgToClient', data: payload };
+  @SubscribeMessage('drawInfo')
+  handleMessage(client: Socket, payload: string) {
+    this.wss.emit('draw', { data: payload });
   }
 }

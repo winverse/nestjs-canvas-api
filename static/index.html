@@ -10,15 +10,6 @@
   <body>
     <div id="v-app">
       <canvas id="canvas"></canvas>
-      <form>
-        <input v-model="text" type="text" />
-        <button type="submit" @click.prevent="sendMessage()">Send</button>
-      </form>
-      <p>
-        <ul>
-          <li v-for="msg of messages">{{ msg }}</li>
-        </ul>
-      </p>
     </div>
       <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
       <script src="http://localhost:8000/websockets/rooms/socket.io.js"></script>

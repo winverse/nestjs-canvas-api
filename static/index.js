@@ -1,9 +1,7 @@
 const app = new Vue({
   el: '#v-app',
   data: {
-    text: '',
-    messages: [],
-    socket: null,
+    socket: null, // socket
     ctx: null, // canvas context
     lastPoint: null,
     connections: [], // { id: uuid, name: string }
@@ -14,6 +12,7 @@ const app = new Vue({
       this.socket.emit('drawInfo', drawInfo);
     },
     draw(drawInfo) {
+      if (!drawInfo) return;
       this.ctx.beginPath();
       this.ctx.moveTo(drawInfo.lastPoint.x, drawInfo.lastPoint.y);
       this.ctx.lineTo(drawInfo.x, drawInfo.y);
@@ -52,6 +51,10 @@ const app = new Vue({
       if (e.key === 'Backspace') {
         this.ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
+
+      if (e.code) {
+        this.socket.emit('keydown', e.key);
+      }
     },
     createCanvas() {
       let canvas = document.querySelector('canvas');
@@ -67,9 +70,13 @@ const app = new Vue({
       const socket = io('http://localhost:8000', { path: '/websockets/rooms' });
       this.socket = socket;
 
-      socket.emit('joinRoom');
       socket.on('draw', drawInfo => {
         this.draw(drawInfo.data);
+      });
+
+      socket.on('keydown', ({ data }) => {
+        const event = { key: data };
+        this.onKeyDown(event);
       });
     },
     disconnect() {

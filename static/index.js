@@ -4,7 +4,8 @@ const app = new Vue({
     socket: null, // socket
     ctx: null, // canvas context
     lastPoint: null,
-    connections: [], // { id: uuid, name: string }
+    loggedUser: {}, // { id: string, name: string, socketId: string }
+    users: [], // { id: string, name: string, socketId: string }[]
     color: 'black',
   },
   methods: {
@@ -47,11 +48,9 @@ const app = new Vue({
     },
     onKeyDown(e) {
       let canvas = document.querySelector('canvas');
-
       if (e.key === 'Backspace') {
         this.ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
-
       if (e.code) {
         this.socket.emit('keydown', e.key);
       }
@@ -66,27 +65,58 @@ const app = new Vue({
       context.clearRect(0, 0, canvas.width, canvas.height);
       this.ctx = context;
     },
-    connect() {
+    setSocket() {
       const socket = io('http://localhost:8000', { path: '/websockets/rooms' });
       this.socket = socket;
-
-      socket.on('draw', drawInfo => {
-        this.draw(drawInfo.data);
+    },
+    async connect() {
+      this.socket.on('connection', ({ data }) => {
+        if (data.users) {
+          console.log(data.users);
+          this.users = data.users;
+        }
       });
 
-      socket.on('keydown', ({ data }) => {
+      this.socket.on('draw', ({ data }) => {
+        this.draw(data);
+      });
+
+      this.socket.on('keydown', ({ data }) => {
         const event = { key: data };
         this.onKeyDown(event);
       });
+
+      this.socket.on('disconnection', ({ data }) => {
+        const remainUser = this.users.filter(
+          user => user.socketId !== data.socketId,
+        );
+        this.users = remainUser;
+      });
     },
-    disconnect() {
-      console.log('disConnected');
+    async login() {
+      const {
+        data: { loggedUser },
+      } = await axios.post('http://localhost:3000/api/rooms/login');
+      this.loggedUser = loggedUser;
+    },
+    async getUsers() {
+      const {
+        data: { users },
+      } = await axios.get('http://localhost:3000/api/users');
+      this.users = users;
+    },
+    async init() {
+      await this.login();
+      await this.getUsers();
+      await this.connect();
     },
   },
 });
 
-app.connect();
+app.setSocket();
+app.init();
 app.createCanvas();
+// app.clearDB();
 
 window.onresize = app.createCanvas;
 window.onmousemove = app.mouseMove;

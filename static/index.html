@@ -9,10 +9,21 @@
   </head>
   <body>
     <div id="v-app">
-      <canvas id="canvas"></canvas>
+      <article class="user-list">
+        <ul>
+          <li v-for="user in users">
+            <div>{{ user.name }}</div>
+            <!-- <div>{{ user.id }}</div> -->
+          </li>
+        </ul>
+      </article>
+      <main class="board">
+        <canvas id="canvas"></canvas>
+      </main>
     </div>
-      <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-      <script src="http://localhost:8000/websockets/rooms/socket.io.js"></script>
-      <script src="./index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="http://localhost:8000/websockets/rooms/socket.io.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="./index.js"></script>
   </body>
 </html>

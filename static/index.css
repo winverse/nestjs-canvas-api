@@ -4,10 +4,32 @@
 }
 
 body {
-  background: red;
+  background: white
 }
+
+#v-app {
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.user-list {
+  z-index: 100;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: red;
+  width: 20%;
+  height: 100vh;
+} 
+
+.board {
+  width: 100%;
+}
+
 #canvas {
   width: 100%;
   height: 100vh;
-  background: white;
+  background: gold;
 }

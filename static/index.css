@@ -19,9 +19,10 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  background: red;
-  width: 20%;
+  background: white;
+  width: 10%;
   height: 100vh;
+  border-right: 10px solid black;
 } 
 
 .board {
@@ -31,5 +32,5 @@ body {
 #canvas {
   width: 100%;
   height: 100vh;
-  background: gold;
+  background: white;
 }

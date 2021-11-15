@@ -14,6 +14,8 @@ export interface UserInfo {
   id: string;
   name: string;
   socketId: string | null;
+  thumbnail: string;
+  score: number;
 }
 
 @WebSocketGateway(8000, {

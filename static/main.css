@@ -1,0 +1,64 @@
+.board {
+  padding-top: 20px;
+  background: #FCFCFE;
+  width: 100%;
+}
+
+.rank-box {
+  margin-top: 20px;
+  width: calc(100% - 550px);
+  margin: 0 auto;
+}
+
+.rank-box ul {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.ranker-title {
+  color: rgb(121, 122, 135, 0.7);
+  font-size: 1rem;
+  letter-spacing: -0.5px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.rank-user-list {
+  background: rgb(247, 226, 108);
+  display: inline-block;
+  text-align: center;
+  margin-right: 15px;
+}
+
+.rank-user-info {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 70px;
+}
+
+.rank-user-name {
+  color: #000000;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.rank-user-name.ranker {
+  background: red;
+  color: white;
+}
+
+.rank-user-thumbnail {
+  z-index: 10;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+}
+
+#canvas {
+  width: 100%;
+  height: 100vh;
+}

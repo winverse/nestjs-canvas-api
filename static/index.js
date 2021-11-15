@@ -4,8 +4,8 @@ const app = new Vue({
     socket: null, // socket
     ctx: null, // canvas context
     lastPoint: null,
-    loggedUser: {}, // { id: string, name: string, socketId: string }
-    users: [], // { id: string, name: string, socketId: string }[]
+    loggedUser: {},
+    users: [], // { id: string, name: string, socketId: string, score: number, thumbnail: string }[]
     color: 'black',
   },
   methods: {
@@ -104,6 +104,8 @@ const app = new Vue({
         data: { users },
       } = await axios.get('http://localhost:3000/api/users');
       this.users = users;
+
+      console.log(users);
     },
     async init() {
       await this.login();

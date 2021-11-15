@@ -5,21 +5,46 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>NestJs socket canvas api</title>
     <link href="https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css" rel="stylesheet">
-    <link href="./index.css" rel="stylesheet" type="text/css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link href="./user-list.css" rel="stylesheet" type="text/css">
+    <link href="./main.css" rel="stylesheet" type="text/css">
+    <link href="./chat.css" rel="stylesheet" type="text/css">
   </head>
   <body>
     <div id="v-app">
-      <article class="user-list">
-        <ul>
-          <li v-for="user in users">
-            <div>{{ user.name }}</div>
-            <!-- <div>{{ user.id }}</div> -->
+      <article class="user-list-box">
+        <div class="user-list-title">FRIENDS</div>
+        <ul class="user-list">
+          <li v-for="user in users" class="user-info-list">
+            <div class="user-info">
+              <img :src="user.thumbnail" class="user-thumbnail" />
+              <span class="user-name">{{ user.name }}</span>
+            </div>
           </li>
         </ul>
       </article>
       <main class="board">
+        <div class="rank-box">
+          <div class="ranker-title">Ranking</div>
+          <ul>
+            <li v-for="(user, index) in users" class="rank-user-list">
+              <div class="rank-user-info">
+                <img :src="user.thumbnail" class="rank-user-thumbnail" />
+                <span class="rank-user-name" :class="{ 'ranker': index === 0 }">{{ user.name }}</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="problem-box">
+
+        </div>
         <canvas id="canvas"></canvas>
       </main>
+      <aside class="chat-box">
+        chat
+      </aside>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="http://localhost:8000/websockets/rooms/socket.io.js"></script>

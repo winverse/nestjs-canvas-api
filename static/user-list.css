@@ -1,0 +1,78 @@
+/* #fa3f40 */
+/* f1f4f7 */
+
+* {
+  box-sizing: border-box;
+  margin: 0
+}
+
+body {
+  font-family: 'Noto Sans', sans-serif;
+  font-family: 'Noto Sans KR', sans-serif;
+  background: #FEFEFE;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -1px;
+}
+
+#v-app {
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.user-list-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: #f1f4f7;
+  width: 250px;
+  height: 100vh;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  box-shadow: rgb(0 0 0 / 4%) 0px 4px 16px 0px;
+  transition: box-shadow 0.25s ease-in 0s, transform 0.25s ease-in 0s;
+  padding-left: 20px;
+  padding-right: 40px;
+}
+
+.user-list-title {
+  margin-top: 100px;
+  margin-bottom: 30px;
+  text-align: left;
+  color: rgb(121, 122, 135, 0.7);
+  font-size: 1rem;
+  letter-spacing: -0.5px;
+  font-weight: 600;
+}
+
+.user-list {
+  margin-top: 10px;
+}
+
+.user-info-list + .user-info-list {
+  margin-top: 10px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-info .user-thumbnail {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.user-info .user-name {
+  margin-left: 10px;
+  color: #000000;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.user-info:first-child {
+  margin-top: 0px;
+}

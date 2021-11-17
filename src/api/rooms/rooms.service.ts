@@ -26,7 +26,7 @@ export class RoomsService {
     const users: UserInfo[] = (await redisGet('users')) || [];
 
     const randomNumber = Utils.randomNumber(13);
-    const thumbnailUrl = `http://localhost:3000/images/thumbnail_${randomNumber}.png`;
+    const thumbnailUrl = `http://localhost:3000/thumbnails/thumbnail_${randomNumber}.png`;
     const name = names[Utils.randomNumber(13)];
     const loggedUser = {
       id: nanoid(),

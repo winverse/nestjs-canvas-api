@@ -9,6 +9,7 @@ body {
   background: #FEFEFE;
   -webkit-font-smoothing: antialiased;
   letter-spacing: -1px;
+  overflow: hidden;
 }
 
 #v-app {
@@ -20,17 +21,17 @@ body {
 }
 
 .board {
-  padding-top: 20px;
-  padding-left: 20px;
+  padding: 20px 30px;
   width: 100%;
-  background: gold;
-  
 }
 
 .rank-box {
-  margin-top: 20px;
-  width: 100%;
   margin: 0 auto;
+  width: 100%;
+  background: white;
+  border-radius: 20px;
+  padding: 10px 20px;
+  box-shadow: rgb(0 0 0 / 4%) 0px 4px 16px 0px;
 }
 
 .rank-box ul {
@@ -47,7 +48,6 @@ body {
 }
 
 .rank-user-list {
-  background: rgb(247, 226, 108);
   display: inline-block;
   text-align: center;
   margin-right: 15px;
@@ -61,6 +61,10 @@ body {
   width: 70px;
 }
 
+.crown-box {
+  min-height: 20px;
+}
+
 .rank-user-name {
   color: #000000;
   font-size: 0.875rem;
@@ -69,18 +73,59 @@ body {
   padding-bottom: 5px;
 }
 
-.rank-user-name.ranker {
-  background: red;
-  color: white;
-}
-
 .rank-user-thumbnail {
   z-index: 10;
-  width: 70px;
-  height: 70px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
+}
+
+.canvas-box {
+  position: relative;
+  margin: 0 auto;
+  margin-top: 20px;
+  width: 100%;
+  height: calc(100vh - (60px + 164px));
+  background: white;
+  border-radius: 20px;
+  box-shadow: rgb(0 0 0 / 4%) 0px 4px 16px 0px;
+}
+
+.problem-box {
+  position: absolute;
+  top: 20px;
+  left: 30px;
+  display: flex;
+  width: 200px;
+  font-size: 1rem;
+  border: 5px solid #fa3f40;
+  border-radius: 20px;
+  background: white;
+}
+
+.problem-box .text {
+  background: #fa3f40;
+  flex: 4;
+  text-align: center;
+  color: white;
+  font-weight: 600;
+  padding-top: 5px;
+}
+
+.problem-box .problem {
+  flex: 9;
+  background: white;
+  color: #fa3f40;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  font-size: 1rem;
+  padding-left: 20px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-weight: 500;
 }
 
 #canvas {
   width: 100%;
+  height: 100%;
 }

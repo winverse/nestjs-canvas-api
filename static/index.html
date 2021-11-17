@@ -8,10 +8,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
-    <link href="./user-list.css" rel="stylesheet" type="text/css">
-    <link href="./main.css" rel="stylesheet" type="text/css">
-    <link href="./chat.css" rel="stylesheet" type="text/css">
-    <link href="./common.css" rel="stylesheet" type="text/css">
+    <link href="./css/user-list.css" rel="stylesheet" type="text/css">
+    <link href="./css/main.css" rel="stylesheet" type="text/css">
+    <link href="./css/chat.css" rel="stylesheet" type="text/css">
+    <link href="./css/common.css" rel="stylesheet" type="text/css">
   </head>
   <body>
     <div id="v-app">
@@ -47,6 +47,13 @@
             <div class="problem">소방관</div>
           </div>
           <canvas id="canvas"></canvas>
+          <div class="palette-box">
+            <ul>
+              <li v-for="color in palette">
+                <div v-on:click="handleColor(color)" class="color" v-add-class-hover="'hover'" name="color" :style="{'background-color': color}">{{color}}</div>
+              </li>
+            </ul>
+          </div>
         </div>
       </main>
       <aside class="chat-box">

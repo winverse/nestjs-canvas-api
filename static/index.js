@@ -1,3 +1,19 @@
+Vue.directive('add-class-hover', {
+  bind(el, binding, vnode) {
+    const { value = '' } = binding;
+    el.addEventListener('mouseenter', () => {
+      el.classList.add(value);
+    });
+    el.addEventListener('mouseleave', () => {
+      el.classList.remove(value);
+    });
+  },
+  unbind(el, binding, vnode) {
+    el.removeEventListener('mouseenter');
+    el.removeEventListener('mouseleave');
+  },
+});
+
 const app = new Vue({
   el: '#v-app',
   data: {
@@ -7,6 +23,18 @@ const app = new Vue({
     loggedUser: {},
     users: [], // { id: string, name: string, socketId: string, score: number, thumbnail: string }[]
     color: 'black',
+    palette: [
+      '#000000',
+      '#868e96',
+      '#fa5252',
+      '#e64980',
+      '#4c6ef5',
+      '#15aabf',
+      '#12b886',
+      '#40c057',
+      '#fab005',
+      '#fd7e14',
+    ],
   },
   methods: {
     broadcast(drawInfo) {
@@ -23,7 +51,8 @@ const app = new Vue({
       this.ctx.stroke();
     },
     mouseMove(e) {
-      if (e.buttons) {
+      const domId = e?.target?.getAttribute('id');
+      if (e.buttons && domId === 'canvas') {
         let { lastPoint, ctx } = this;
         if (!lastPoint) {
           this.lastPoint = { x: e.offsetX, y: e.offsetY };
@@ -46,6 +75,9 @@ const app = new Vue({
     lastPointReset(e) {
       this.lastPoint = null;
     },
+    handleColor(color) {
+      this.color = color;
+    },
     onKeyDown(e) {
       let canvas = document.querySelector('canvas');
       if (e.key === 'Backspace') {
@@ -57,10 +89,10 @@ const app = new Vue({
     },
     createCanvas() {
       let canvas = document.querySelector('canvas');
-      const context = canvas.getContext('2d');
 
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const context = canvas.getContext('2d');
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
 
       context.clearRect(0, 0, canvas.width, canvas.height);
       this.ctx = context;

@@ -1,6 +1,7 @@
 * {
   box-sizing: border-box;
-  margin: 0
+  margin: 0;
+  user-select: none;
 }
 
 body {
@@ -128,4 +129,90 @@ body {
 #canvas {
   width: 100%;
   height: 100%;
+}
+
+.palette-box {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+}
+
+.palette-box li {
+  display: inline-block;
+}
+
+.palette-box li .color {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: transparent;
+}
+
+.palette-box li .color.hover {
+  transition: box-shadow .2s;
+  cursor: pointer;
+  box-shadow: 5px 5px 8px rgba(33,33,33,.2); 
+}
+
+
+.palette-box li + li {
+  margin-left: 20px;
+}
+
+@media (max-width: 1400px) {
+  .palette-box li .color {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (max-width: 1300px) {
+  .palette-box li .color {
+    width: 20px;
+    height: 20px;
+  }
+
+  .palette-box li + li {
+    margin-left: 15px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .palette-box {
+    position: absolute;
+    top: 25px;
+    right: 30px;
+  }
+
+  .palette-box li .color {
+    width: 20px;
+    height: 20px;
+  }
+
+  .palette-box li + li {
+    margin-left: 10px;
+  }
+}
+
+
+@media (max-width: 1024px) {
+  .palette-box li {
+    display: block;
+  }
+
+  .palette-box {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+  }
+
+  .palette-box li .color {
+    width: 20px;
+    height: 20px;
+  }
+
+  .palette-box li + li {
+    margin-left: 0px;
+    margin-top: 10px;
+  }
 }

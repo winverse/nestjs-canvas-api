@@ -1,5 +1,3 @@
-/* #fa3f40 */
-/* f1f4f7 */
 
 .user-list-box {
   background: #f1f4f7;
@@ -45,7 +43,7 @@
 
 .user-info .user-name {
   margin-left: 10px;
-  color: #000000;
+  color: #48494b;
   font-size: 0.875rem;
   font-weight: 600;
 }

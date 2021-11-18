@@ -14,10 +14,25 @@ Vue.directive('add-class-hover', {
   },
 });
 
+Vue.directive('click-outside', {
+  bind: function (el, binding, vnode) {
+    el.clickOutsideEvent = function (event) {
+      if (!(el == event.target || el.contains(event.target))) {
+        vnode.context[binding.expression](event);
+      }
+    };
+    document.body.addEventListener('click', el.clickOutsideEvent);
+  },
+  unbind: function (el) {
+    document.body.removeEventListener('click', el.clickOutsideEvent);
+  },
+});
+
 const app = new Vue({
   el: '#v-app',
   data: {
-    socket: null, // socket
+    os: '',
+    socket: { room: null, chat: null }, // socket
     ctx: null, // canvas context
     lastPoint: null,
     loggedUser: {},
@@ -35,11 +50,11 @@ const app = new Vue({
       '#fab005',
       '#fd7e14',
     ],
+    textareaShow: false,
+    messages: [], // { name, message, thumbnail, createdAt }
+    message: '',
   },
   methods: {
-    broadcast(drawInfo) {
-      this.socket.emit('drawInfo', drawInfo);
-    },
     draw(drawInfo) {
       if (!drawInfo) return;
       this.ctx.beginPath();
@@ -50,7 +65,7 @@ const app = new Vue({
       this.ctx.lineCap = 'round';
       this.ctx.stroke();
     },
-    mouseMove(e) {
+    handleMouseMove(e) {
       const domId = e?.target?.getAttribute('id');
       if (e.buttons && domId === 'canvas') {
         let { lastPoint, ctx } = this;
@@ -67,7 +82,7 @@ const app = new Vue({
         };
 
         this.draw(drawInfo);
-        this.broadcast(drawInfo);
+        this.socket.room.emit('drawInfo', drawInfo);
 
         this.lastPoint = { x: e.offsetX, y: e.offsetY };
       }
@@ -78,47 +93,98 @@ const app = new Vue({
     handleColor(color) {
       this.color = color;
     },
-    onKeyDown(e) {
+    handleKeyDown(e) {
       let canvas = document.querySelector('canvas');
       if (e.key === 'Backspace') {
         this.ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
       if (e.code) {
-        this.socket.emit('keydown', e.key);
+        this.socket.room.emit('keydown', e.key);
+      }
+    },
+    handleMessage(e) {
+      const { value } = e?.target;
+      this.message = value;
+      if (value === '') {
+        this.textareaShow = false;
+      }
+    },
+    handleTextareaShow() {
+      this.textareaShow = true;
+      const textArea = document.getElementById('textarea');
+      if (textArea) {
+        textarea.focus();
+      }
+    },
+    handleTextareaHide(e) {
+      const except = ['no-message', 'textarea', 'fas'].includes(
+        e.target.getAttribute('class')?.split(' ')[0],
+      );
+      if (this.textareaShow && !except) {
+        const textArea = document.getElementById('textarea');
+        textArea.blur();
+        this.textareaShow = false;
+        this.message = '';
+      }
+    },
+    async handleSendMessage(e) {
+      if (!this.message) return;
+      // send Icon click
+      const isSendIcon =
+        e.target.getAttribute('class')?.split(' ')[0] === 'fas';
+      if (e.keyCode || isSendIcon) {
+        const { name, thumbnail } = this.loggedUser;
+        const messageInfo = {
+          name,
+          thumbnail,
+          message: this.message,
+          createAt: new Date(),
+        };
+        this.messages.push(messageInfo);
+        this.message = '';
+        this.textareaShow = false;
+
+        const textArea = document.getElementById('textarea');
+        textArea.blur();
       }
     },
     createCanvas() {
       let canvas = document.querySelector('canvas');
-
       const context = canvas.getContext('2d');
       canvas.width = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
-
       context.clearRect(0, 0, canvas.width, canvas.height);
       this.ctx = context;
     },
     setSocket() {
-      const socket = io('http://localhost:8000', { path: '/websockets/rooms' });
-      this.socket = socket;
+      const roomSocket = io('http://localhost:8000', {
+        path: '/websockets/rooms',
+      });
+
+      const chatSocket = io('http://localhost:8001', {
+        path: '/websockets/chat',
+      });
+
+      this.socket.room = roomSocket;
+      this.socket.chat = chatSocket;
     },
     async connect() {
-      this.socket.on('connection', ({ data }) => {
+      this.socket.room.on('connection', ({ data }) => {
         if (data.users) {
-          console.log(data.users);
           this.users = data.users;
         }
       });
 
-      this.socket.on('draw', ({ data }) => {
+      this.socket.room.on('draw', ({ data }) => {
         this.draw(data);
       });
 
-      this.socket.on('keydown', ({ data }) => {
+      this.socket.room.on('keydown', ({ data }) => {
         const event = { key: data };
-        this.onKeyDown(event);
+        this.handleKeyDown(event);
       });
 
-      this.socket.on('disconnection', ({ data }) => {
+      this.socket.room.on('disconnection', ({ data }) => {
         const remainUser = this.users.filter(
           user => user.socketId !== data.socketId,
         );
@@ -136,10 +202,13 @@ const app = new Vue({
         data: { users },
       } = await axios.get('http://localhost:3000/api/users');
       this.users = users;
-
-      console.log(users);
     },
     async init() {
+      const { family } = platform.os;
+
+      this.os = family === 'OS X' ? 'mac' : 'window';
+      console.log(this.os);
+
       await this.login();
       await this.getUsers();
       await this.connect();
@@ -153,6 +222,7 @@ app.createCanvas();
 // app.clearDB();
 
 window.onresize = app.createCanvas;
-window.onmousemove = app.mouseMove;
+window.onmousemove = app.handleMouseMove;
 window.onmouseup = app.lastPointReset;
-window.onkeydown = app.onKeyDown;
+window.onkeydown = app.handleKeyDown;
+window.onclick = app.handleTextareaHide;

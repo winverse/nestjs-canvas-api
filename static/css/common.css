@@ -1,5 +1,28 @@
+/* #fa3f40 */
+/* f1f4f7 */
+  /* color: #48494b; */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  user-select: none;
+}
+
+body {
+  font-family: 'Noto Sans', sans-serif;
+  font-family: 'Noto Sans KR', sans-serif;
+  background: #FEFEFE;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.5px;
+  overflow: hidden;
+}
+
+textarea::-webkit-scrollbar {
+   display: none;
+ }
+
 .hide {
-  display: none !important;
+  display: none;
 }
 
 .show {

@@ -89,12 +89,16 @@
   text-align: center;
 }
 
+.message-info {
+  white-space: pre;
+}
+
 /*  send-message */
 
 .send-message-box {
   display: flex;
   margin-top: 20px;
-  height: 80px;
+  height: 70px;
   padding: 10px 20px;
   background: white;
   border-radius: 20px;

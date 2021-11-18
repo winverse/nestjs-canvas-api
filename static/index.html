@@ -74,7 +74,7 @@
           <div class="chat-list-box">
             <div class="noting-message" v-if="messages.length === 0">No messages</div>
             <ul>
-              <li v-for="msg in messages">{{msg.message}}</li>
+              <li v-for="msg in messages" class="message-info">{{msg.message}}</li>
             </ul>
           </div>
         </section>

@@ -119,9 +119,9 @@
 }
 
 .message-info .message .message-text {
-  margin-top: 5px;
+  margin-top: 2px;
   color: #868e96;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 17px;
   font-size: 0.85rem;
 }

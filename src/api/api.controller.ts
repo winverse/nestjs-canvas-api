@@ -11,11 +11,6 @@ export class ApiController {
     return this.apiService.getUsers();
   }
 
-  @Get('/questions')
-  getQuestion() {
-    return this.apiService.getQuestion();
-  }
-
   @Post('/db')
   clearDB() {
     return this.apiService.clearDB();

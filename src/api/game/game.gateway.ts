@@ -1,4 +1,4 @@
-import { redisGet, redisSet } from './../../lib/redis';
+import { redisGet, redisSet } from '../../lib/redis';
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -21,12 +21,12 @@ export interface UserInfo {
 }
 
 @WebSocketGateway(8000, {
-  path: '/websockets/rooms',
+  path: '/websockets/games',
   serverClient: true,
   cors: true,
   namespace: '/',
 })
-export class RoomsGateway
+export class GameGateway
   implements OnGatewayConnection<Socket>, OnGatewayDisconnect<Socket>
 {
   @WebSocketServer()
@@ -43,6 +43,7 @@ export class RoomsGateway
   }
 
   async handleConnection(socket: Socket) {
+    socket.join(this.roomName);
     const users = await redisGet<UserInfo[]>('users');
     const user = users.find(user => !user.socketId);
     const socketId = socket.id;
@@ -53,16 +54,19 @@ export class RoomsGateway
 
     socket.to(this.roomName).emit('connection', { data: { users } });
     await redisSet('users', users);
-    socket.join(this.roomName);
   }
 
   async handleDisconnect(socket: Socket) {
     const users = await redisGet<UserInfo[]>('users');
-    const remainUsers = users.filter(user => user.socketId !== socket.id);
-    await redisSet('users', remainUsers);
-    socket
-      .to(this.roomName)
-      .emit('disconnection', { data: { socketId: socket.id } });
+    const remain = users.filter(user => user.socketId !== socket.id);
+    const leave = users.find(user => user.socketId === socket.id);
+    await redisSet('users', remain);
+    if (leave) {
+      socket.to(this.roomName).emit('disconnection', { data: leave });
+    }
+    if (remain.length === 0) {
+      await redisSet('examiner', { examiner: null, question: null });
+    }
     socket.leave(this.roomName);
   }
 
@@ -84,5 +88,32 @@ export class RoomsGateway
   handleKeydown(socket: Socket, payload: KeydownType) {
     if (!payload?.includes('Backspace')) return;
     socket.to(this.roomName).emit('keydown', { data: payload });
+  }
+
+  @SubscribeMessage('setExaminer')
+  async handleExaminer(
+    socket: Socket,
+    payload: { examiner: UserInfo; question: string },
+  ) {
+    socket.to(this.roomName).emit('setExaminer', { data: payload });
+    const users = await redisGet<UserInfo[]>('users');
+    const user = users.find(user => user.id === payload.examiner.id);
+
+    if (user) {
+      user.wasExaminer = true;
+    }
+
+    await redisSet('examiner', payload);
+    await redisSet('users', users);
+  }
+
+  @SubscribeMessage('gameStart')
+  async handleGameStart(socket: Socket) {
+    socket.to(this.roomName).emit('gameStart');
+  }
+
+  @SubscribeMessage('gameEnd')
+  async handleGameEnd(socket: Socket) {
+    socket.to(this.roomName).emit('gameEnd');
   }
 }

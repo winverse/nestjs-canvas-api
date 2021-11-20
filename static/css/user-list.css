@@ -12,13 +12,29 @@
   padding-right: 40px;
 }
 
+.examiner-title {
+  margin-top: 20px;
+  text-align: left;
+  color: #797a87b3;
+  font-size: 1rem;
+  letter-spacing: -1px;
+  font-weight: 600;
+}
+
+.examiner-name {
+  margin-top: 20px;
+  color: #48494b;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
 .user-list-title {
   margin-top: 100px;
   margin-bottom: 30px;
   text-align: left;
   color: rgb(121, 122, 135, 0.7);
   font-size: 1rem;
-  letter-spacing: -0.5px;
+  letter-spacing: -1px;
   font-weight: 600;
 }
 

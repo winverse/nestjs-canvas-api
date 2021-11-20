@@ -28,6 +28,19 @@ Vue.directive('click-outside', {
   },
 });
 
+const palette = [
+  '#000000',
+  '#868e96',
+  '#fa5252',
+  '#e64980',
+  '#4c6ef5',
+  '#15aabf',
+  '#12b886',
+  '#40c057',
+  '#fab005',
+  '#fd7e14',
+];
+
 const app = new Vue({
   el: '#v-app',
   data: {
@@ -38,20 +51,22 @@ const app = new Vue({
     loggedUser: {},
     users: [], // { id: string, name: string, socketId: string, score: number, thumbnail: string }[]
     color: 'black',
-    palette: [
-      '#000000',
-      '#868e96',
-      '#fa5252',
-      '#e64980',
-      '#4c6ef5',
-      '#15aabf',
-      '#12b886',
-      '#40c057',
-      '#fab005',
-      '#fd7e14',
-    ],
+    palette,
     textareaShow: false,
-    messages: [], // { name, message, thumbnail, createdAt }
+    messages: [
+      {
+        thumbnail: 'http://localhost:3000/thumbnails/thumbnail_0.png',
+        createdAt: '17:08',
+        message: 'fdf',
+        name: 'Darrerll Steward',
+      },
+      {
+        thumbnail: 'http://localhost:3000/thumbnails/thumbnail_0.png',
+        createdAt: '17:08',
+        message: 'fdf',
+        name: 'Darrerll Steward',
+      },
+    ], // { name, message, thumbnail, createdAt }
     message: '',
   },
   methods: {
@@ -102,12 +117,9 @@ const app = new Vue({
         this.socket.room.emit('keydown', e.key);
       }
     },
-    handleMessage(e) {
+    handleChangeMessage(e) {
       const { value } = e?.target;
       this.message = value;
-      if (value === '') {
-        this.textareaShow = false;
-      }
     },
     handleTextareaShow() {
       this.textareaShow = true;
@@ -130,22 +142,28 @@ const app = new Vue({
     async handleSendMessage(e) {
       if (!this.message) return;
       // send Icon click
-      const isSendIcon =
+      const clickSendIcon =
         e.target.getAttribute('class')?.split(' ')[0] === 'fas';
-      if (e.keyCode || isSendIcon) {
+
+      if (e.keyCode || clickSendIcon) {
         const { name, thumbnail } = this.loggedUser;
         const messageInfo = {
           name,
           thumbnail,
           message: this.message,
-          createAt: new Date(),
+          createdAt: dateFns.format(new Date(), 'HH:mm'),
         };
+
         this.messages.push(messageInfo);
         this.message = '';
-        this.textareaShow = false;
 
         const textArea = document.getElementById('textarea');
-        textArea.blur();
+        textArea.focus();
+
+        setTimeout(() => {
+          const chatList = document.getElementById('chat-list-box');
+          chatList.scrollTop = chatList.scrollHeight;
+        }, 0);
       }
     },
     createCanvas() {
@@ -207,7 +225,6 @@ const app = new Vue({
       const { family } = platform.os;
 
       this.os = family === 'OS X' ? 'mac' : 'window';
-      console.log(this.os);
 
       await this.login();
       await this.getUsers();

@@ -74,7 +74,7 @@ export class RoomsGateway
   }
 
   @SubscribeMessage('drawInfo')
-  handleMessage(socket: Socket, payload: string) {
+  handleChangeMessage(socket: Socket, payload: string) {
     socket.to(this.roomName).emit('draw', { data: payload });
   }
 

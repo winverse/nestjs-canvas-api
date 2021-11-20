@@ -71,10 +71,17 @@
               <span>{{users.length}} Peoples</span>
             </div>
           </div>  
-          <div class="chat-list-box">
+          <div id="chat-list-box" class="chat-list-box">
             <div class="noting-message" v-if="messages.length === 0">No messages</div>
             <ul>
-              <li v-for="msg in messages" class="message-info">{{msg.message}}</li>
+              <li v-for="msg in messages" class="message-info">
+                <img :src="msg.thumbnail" class="message-thumnail" />
+                <div class="message">
+                  <p class="message-name">{{msg.name}}</p>
+                  <p class="message-text">{{msg.message}}</p>
+                </div>
+                <span class="message-time">{{msg.createdAt}}</span>
+              </li>
             </ul>
           </div>
         </section>
@@ -88,7 +95,7 @@
             rows="10"
             cols="2"
             v-bind:value="message"
-            v-on:input="handleMessage"
+            v-on:input="handleChangeMessage"
             @keydown.meta.enter="handleSendMessage"
           >
             {{message}}
@@ -101,7 +108,7 @@
             rows="10"
             cols="2"
             v-bind:value="message"
-            v-on:input="handleMessage"
+            v-on:input="handleChangeMessage"
             @keydown.alt.13="handleSendMessage"
           >
             {{message}}
@@ -113,6 +120,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="http://localhost:8000/websockets/rooms/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/platform/1.3.6/platform.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.min.js" integrity="sha512-F+u8eWHrfY8Xw9BLzZ8rG/0wIvs0y+JyRJrXjp3VjtFPylAEEGwKbua5Ip/oiVhaTDaDs4eU2Xtsxjs/9ag2bQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="./index.js"></script>
   </body>

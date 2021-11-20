@@ -35,9 +35,9 @@
 }
 
 .rank-user-list {
+  width: 70px;
   display: inline-block;
   text-align: center;
-  margin-right: 15px;
 }
 
 .rank-user-info {
@@ -45,7 +45,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 70px;
 }
 
 .crown-box {
@@ -78,7 +77,7 @@
   box-shadow: rgb(0 0 0 / 4%) 0px 4px 16px 0px;
 }
 
-.problem-box {
+.question-box {
   position: absolute;
   top: 20px;
   left: 30px;
@@ -90,7 +89,7 @@
   background: white;
 }
 
-.problem-box .text {
+.question-box .text {
   background: #fa3f40;
   flex: 4;
   text-align: center;
@@ -101,7 +100,42 @@
   border-bottom-left-radius: 20px;
 }
 
-.problem-box .problem {
+.start-button {
+  position: absolute;
+  top: 20px;
+  left: 30px;
+  background: #fa3f40;
+  border: 1px solid #fa3f40;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
+  color: #FFFFFF;
+  cursor: pointer;
+  display: inline-block;
+  font-family: nunito,roboto,proxima-nova,"proxima nova",sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 16px;
+  min-height: 40px;
+  outline: 0;
+  padding: 12px 14px;
+  text-align: center;
+  text-rendering: geometricprecision;
+  text-transform: none;
+  user-select: none;
+  transition: all 0.25s ease-in-out;
+}
+
+.start-button:hover {
+  background-color: white;
+  color: #fa3f40;
+}
+
+.start-button:active {
+  top: 22px;
+  left: 32px;
+}
+
+.question-box .question {
   flex: 9;
   background: white;
   color: #fa3f40;
@@ -192,17 +226,21 @@
     padding: 10px;
   }
 
-  .problem-box {
+  .rank-user-list {
+    width: 55px;
+  }
+
+  .question-box {
     width: 150px;
     font-size: 0.875rem;
     border: 3px solid #fa3f40;
   }
 
-  .problem-box .text {
+  .question-box .text {
       flex: 5;
   }
 
-  .problem-box .problem {
+  .question-box .question {
     padding-left: 15px;
     padding-right: 15px;
   }

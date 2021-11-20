@@ -16,6 +16,8 @@ export interface UserInfo {
   socketId: string | null;
   thumbnail: string;
   score: number;
+  wasExaminer: boolean;
+  enteredAt: number;
 }
 
 @WebSocketGateway(8000, {
@@ -41,7 +43,6 @@ export class RoomsGateway
   }
 
   async handleConnection(socket: Socket) {
-    socket.join(this.roomName);
     const users = await redisGet<UserInfo[]>('users');
     const user = users.find(user => !user.socketId);
     const socketId = socket.id;
@@ -50,8 +51,9 @@ export class RoomsGateway
       user.socketId = socketId;
     }
 
-    await redisSet('users', users);
     socket.to(this.roomName).emit('connection', { data: { users } });
+    await redisSet('users', users);
+    socket.join(this.roomName);
   }
 
   async handleDisconnect(socket: Socket) {
@@ -82,10 +84,5 @@ export class RoomsGateway
   handleKeydown(socket: Socket, payload: KeydownType) {
     if (!payload?.includes('Backspace')) return;
     socket.to(this.roomName).emit('keydown', { data: payload });
-  }
-
-  @SubscribeMessage('disconnect')
-  handleDisconnection(socket: Socket, payload: any) {
-    console.log('payload', payload);
   }
 }

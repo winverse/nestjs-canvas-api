@@ -34,7 +34,6 @@ export class ChatGateway
   }
 
   handleDisconnect(socket: Socket) {
-    console.log('disconnected');
     socket.leave(this.roomName);
   }
 

@@ -45,11 +45,13 @@ const app = new Vue({
   el: '#v-app',
   data: {
     os: '',
+    question: '',
     socket: { room: null, chat: null }, // socket
+    isGameStart: false,
     ctx: null, // canvas context
     lastPoint: null,
     loggedUser: {},
-    users: [], // { id: string, name: string, socketId: string, score: number, thumbnail: string }[]
+    users: [], // { id, name, socketId, score, thumbnail, enteredAt, wasExaminer }[]
     color: 'black',
     palette,
     textareaShow: false,
@@ -104,9 +106,18 @@ const app = new Vue({
         this.socket.room.emit('keydown', e.key);
       }
     },
+    handleGameStart() {
+      this.isGameStart = true;
+    },
+    handleGameEnd() {
+      this.isGameStart = false;
+    },
     handleChangeMessage(e) {
       const { value } = e?.target;
       this.message = value;
+      if (this.question === value) {
+        this.handleGameEnd();
+      }
     },
     handleTextareaShow() {
       this.textareaShow = true;
@@ -191,7 +202,6 @@ const app = new Vue({
       });
 
       this.socket.chat.on('receviedMessage', ({ data }) => {
-        console.log('received', data);
         this.messages.push(data);
 
         setTimeout(() => {
@@ -207,6 +217,7 @@ const app = new Vue({
         this.users = remainUser;
       });
     },
+    selectExaminer() {},
     async login() {
       const {
         data: { loggedUser },
@@ -218,6 +229,12 @@ const app = new Vue({
         data: { users },
       } = await axios.get('http://localhost:3000/api/users');
       this.users = users;
+    },
+    async getQuestion() {
+      const {
+        data: { question },
+      } = await axios.get('http://localhost:3000/api/questions');
+      this.question = question;
     },
     async init() {
       const { family } = platform.os;

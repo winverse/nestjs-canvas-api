@@ -34,6 +34,8 @@ export class RoomsService {
       socketId: null,
       thumbnail: thumbnailUrl,
       score: 0,
+      wasExaminer: false,
+      enteredAt: new Date().getTime(),
     };
 
     users.push(loggedUser);

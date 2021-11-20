@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
     <link href="./css/user-list.css" rel="stylesheet" type="text/css">
-    <link href="./css/main.css" rel="stylesheet" type="text/css">
+    <link href="./css/center.css" rel="stylesheet" type="text/css">
     <link href="./css/chat.css" rel="stylesheet" type="text/css">
     <link href="./css/common.css" rel="stylesheet" type="text/css">
   </head>
@@ -31,7 +31,7 @@
         <div class="rank-box">
           <div class="ranker-title">RANKING</div>
           <ul>
-            <li v-for="(user, index) in userSortByScore" class="rank-user-list">
+            <li v-for="(user, index) in users" class="rank-user-list">
               <div class="rank-user-info">
                 <div class="crown-box">
                   <img src="http://localhost:3000/svgs/crown.svg" class="hide" :class="{ 'show': index === 0 }" />
@@ -43,9 +43,12 @@
           </ul>
         </div>
         <div class="canvas-box">
-          <div class="problem-box">
+          <div v-if="!isStart" class="start-button">
+            시작하기
+          </div>
+          <div v-else class="question-box">
             <div class="text">문제</div>
-            <div class="problem">소방관</div>
+            <div class="question">소방관</div>
           </div>
           <canvas id="canvas"></canvas>
           <div class="palette-box">

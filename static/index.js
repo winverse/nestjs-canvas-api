@@ -53,20 +53,7 @@ const app = new Vue({
     color: 'black',
     palette,
     textareaShow: false,
-    messages: [
-      {
-        thumbnail: 'http://localhost:3000/thumbnails/thumbnail_0.png',
-        createdAt: '17:08',
-        message: 'fdf',
-        name: 'Darrerll Steward',
-      },
-      {
-        thumbnail: 'http://localhost:3000/thumbnails/thumbnail_0.png',
-        createdAt: '17:08',
-        message: 'fdf',
-        name: 'Darrerll Steward',
-      },
-    ], // { name, message, thumbnail, createdAt }
+    messages: [], // { name, message, thumbnail, createdAt }
     message: '',
   },
   methods: {
@@ -156,6 +143,7 @@ const app = new Vue({
 
         this.messages.push(messageInfo);
         this.message = '';
+        this.socket.chat.emit('sendMessage', messageInfo);
 
         const textArea = document.getElementById('textarea');
         textArea.focus();
@@ -200,6 +188,16 @@ const app = new Vue({
       this.socket.room.on('keydown', ({ data }) => {
         const event = { key: data };
         this.handleKeyDown(event);
+      });
+
+      this.socket.chat.on('receviedMessage', ({ data }) => {
+        console.log('received', data);
+        this.messages.push(data);
+
+        setTimeout(() => {
+          const chatList = document.getElementById('chat-list-box');
+          chatList.scrollTop = chatList.scrollHeight;
+        }, 0);
       });
 
       this.socket.room.on('disconnection', ({ data }) => {

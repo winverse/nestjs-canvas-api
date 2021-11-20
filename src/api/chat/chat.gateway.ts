@@ -3,9 +3,17 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   WebSocketServer,
+  SubscribeMessage,
 } from '@nestjs/websockets';
 
 import { Server, Socket } from 'socket.io';
+
+interface receviedMessage {
+  name: string;
+  message: string;
+  thumbnail: string;
+  createdAt: string;
+}
 
 @WebSocketGateway(8001, {
   path: '/websockets/chat',
@@ -19,11 +27,21 @@ export class ChatGateway
   @WebSocketServer()
   wss: Server;
 
+  roomName = 'chat';
+
   handleConnection(socket: Socket) {
-    console.log('connected');
+    socket.join(this.roomName);
   }
 
   handleDisconnect(socket: Socket) {
     console.log('disconnected');
+    socket.leave(this.roomName);
+  }
+
+  @SubscribeMessage('sendMessage')
+  async handleMessage(socket: Socket, payload: receviedMessage) {
+    socket.broadcast
+      .to(this.roomName)
+      .emit('receviedMessage', { data: payload });
   }
 }

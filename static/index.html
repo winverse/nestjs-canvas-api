@@ -31,7 +31,7 @@
         <div class="rank-box">
           <div class="ranker-title">RANKING</div>
           <ul>
-            <li v-for="(user, index) in users" class="rank-user-list">
+            <li v-for="(user, index) in userSortByScore" class="rank-user-list">
               <div class="rank-user-info">
                 <div class="crown-box">
                   <img src="http://localhost:3000/svgs/crown.svg" class="hide" :class="{ 'show': index === 0 }" />

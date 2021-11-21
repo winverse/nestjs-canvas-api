@@ -1,6 +1,21 @@
-## Description
+## Like catch-mind game
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Catch-mind is casual game. It is a picture quiz game in which Kungya characters appear as avatars. [read more](https://namu.wiki/w/%EC%BA%90%EC%B9%98%EB%A7%88%EC%9D%B8%EB%93%9C)
+
+> This game is just not Clone-Coding, but code and design by me.
+
+## Outline
+
+![images](https://i.imgur.com/VqULeYN.png)
+
+## Project Stack
+
+- VueJs
+- NestJs
+- Docker
+- Redis
+- SocketIO
+- Canvas
 
 ## Installation
 
@@ -12,24 +27,15 @@ $ yarn
 
 ```bash
 # development
-$ npm run start
+$ yarn run start
 
 # watch mode
-$ npm run start:dev
+$ yarn run start:dev
 
 # production mode
-$ npm run start:prod
+$ yarn run start:prod
 ```
 
-## Test
+## License
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
+The MIT License (MIT)

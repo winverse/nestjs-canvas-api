@@ -19,7 +19,7 @@
       <section class="user-list-box">
         <div class="examiner-title">EXAMINER</div>
         <div class="examiner-name">{{examiner.name}}</div>
-        <div class="user-list-title">FRIENDS</div>
+        <div class="user-list-title">PARTICIPANTS</div>
         <ul class="user-list">
           <li v-for="user in exceptLoggedUsers" class="user-info-list">
             <div class="user-info" >
@@ -46,14 +46,14 @@
         </div>
         <div class="canvas-box">
           <div v-if="!isGameStart" v-on:click="handleGameStart" class="start-button" :class="{'noHover' : this.examiner.id !== this.loggedUser.id}">
-            {{ this.examiner.id !== this.loggedUser.id ? '게임을 준비 중입니다.':'시작하기' }}
+            <p>{{ this.examiner.id !== this.loggedUser.id ? 'PREPARING A GAME...':'START' }}</p>
           </div>
           <div v-else class="question-box">
             <div class="text">문제</div>
             <div class="question">{{ this.examiner.id === this.loggedUser.id ? this.question : "???"}}</div>
           </div>
           <canvas id="canvas"></canvas>
-          <div class="palette-box">
+          <div :class="{'hide' : this.examiner.id !== this.loggedUser.id}" class="palette-box">
             <ul>
               <li v-for="color in palette">
                 <div v-on:click="handleColor(color)" class="color" v-add-class-hover="'hover'" name="color" :style="{'background-color': color}">{{color}}</div>
@@ -73,7 +73,7 @@
             <div class="chat-info-title">Live chat</div>
             <div class="chat-info-len">
               <i class="far fa-user"></i>
-              <span>{{users.length}} Peoples</span>
+              <span>{{sortByScore.length}} Peoples</span>
             </div>
           </div>  
           <div id="chat-list-box" class="chat-list-box">

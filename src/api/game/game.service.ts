@@ -4,14 +4,14 @@ import { Injectable } from '@nestjs/common';
 import { nanoid } from 'nanoid';
 import Utils from 'lib/utils';
 
-export interface RedisExaminerType {
+export interface QuestionInfoType {
   examiner: UserInfo | null;
   question: string | null;
 }
 
 @Injectable()
 export class GameService {
-  async enter() {
+  async enterTheGame() {
     const names = [
       'Eleanor Pena',
       'Leslie Alexandar',
@@ -48,24 +48,30 @@ export class GameService {
     return { loggedUser };
   }
 
-  getQuestion(): { question: string } {
-    const questions = ['소방관'];
-    // const randomNumber = Utils.randomNumber(questions.length);
-    return { question: questions[0] };
-  }
+  async getQuestionInfo() {
+    let questionInfo: QuestionInfoType = await redisGet('questionInfo');
 
-  async getExaminers() {
-    const examinerInfo: RedisExaminerType = await redisGet('examiner');
+    // Is mean first user enter the room OR Needs intialize question info
+    if (!questionInfo?.examiner || !questionInfo?.question) {
+      questionInfo = {
+        examiner: null,
+        question: null,
+      };
 
-    // Is mean first user enter the room;
-    if (!examinerInfo.examiner || !examinerInfo.question) {
-      const user = await redisGet<UserInfo>('users');
-      examinerInfo.examiner = user[0];
-      const { question } = this.getQuestion();
-      examinerInfo.question = question;
-      await redisSet('examiner', examinerInfo);
+      const users = await redisGet<UserInfo[]>('users');
+
+      questionInfo.examiner = users
+        .filter(user => !user.wasExaminer)
+        .sort((a, b) => b.enteredAt - a.enteredAt)[0];
+
+      const questions = ['소방관']; // Add question something...
+      // const randomNumber = Utils.randomNumber(questions.length);
+      const question: string = questions[0];
+
+      questionInfo.question = question;
+      await redisSet('questionInfo', questionInfo);
     }
 
-    return { payload: examinerInfo };
+    return { payload: questionInfo };
   }
 }

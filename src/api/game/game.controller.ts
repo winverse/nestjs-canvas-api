@@ -8,16 +8,11 @@ export class GameController {
 
   @Post('/login')
   enter() {
-    return this.gameService.enter();
+    return this.gameService.enterTheGame();
   }
 
   @Get('/questions')
-  getQuestion() {
-    return this.gameService.getQuestion();
-  }
-
-  @Get('/examiners')
-  getExaminers() {
-    return this.gameService.getExaminers();
+  getQuestionInfo() {
+    return this.gameService.getQuestionInfo();
   }
 }

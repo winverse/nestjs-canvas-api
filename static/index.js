@@ -56,21 +56,12 @@ const app = new Vue({
     color: 'black',
     palette,
     textareaShow: false,
-    messages: [], // { name, message, thumbnail, createdAt }
+    messages: [], // { name, message, thumbnail, createdAt, type: 'message' | 'info' | 'exit' }
     message: '',
   },
   computed: {
     sortByScore() {
-      const array = [...this.users, this.loggedUser];
-      const result = [];
-      const map = new Map();
-      for (const item of array) {
-        if (!map.has(item.id)) {
-          map.set(item.id, true); // set any value to Map
-          result.push(item);
-        }
-      }
-      return result.sort((a, b) => b.score - a.score);
+      return this.users.sort((a, b) => b.score - a.score);
     },
     exceptLoggedUsers() {
       return this.users.filter(user => user.id !== this.loggedUser.id);
@@ -89,7 +80,9 @@ const app = new Vue({
     },
     handleMouseMove(e) {
       const domId = e?.target?.getAttribute('id');
-      if (e.buttons && domId === 'canvas') {
+      const isExaminer = this.loggedUser.id === this.examiner.id;
+
+      if (e.buttons && domId === 'canvas' && isExaminer && this.isGameStart) {
         let { lastPoint, ctx } = this;
         if (!lastPoint) {
           this.lastPoint = { x: e.offsetX, y: e.offsetY };
@@ -126,38 +119,28 @@ const app = new Vue({
       }
     },
     handleGameStart() {
-      console.log('start');
+      if (this.loggedUser.id !== this.examiner.id) return;
       this.socket.game.emit('gameStart');
       setTimeout(() => new Promise(resolve => resolve()), 0);
       this.isGameStart = true;
     },
     handleGameEnd() {
-      this.socket.game.emit('gameEnd');
+      this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+      this.socket.game.emit('gameEnd', { userId: this.loggedUser.id });
       setTimeout(() => new Promise(resolve => resolve()), 0);
       this.isGameStart = false;
     },
-    handleExaminer() {
-      const examiner = this.users
-        .filter(user => !user.wasExaminer)
-        .sort((a, b) => a.enteredAt - b.enteredAt)[0];
+    async handleExaminer() {
+      const { examiner, question } = await getQuestionInfo();
 
-      if (examiner) {
-        this.examiner = examiner;
-        examiner.wasExaminer = true;
-        this.socket.game.emit('setExaminer', {
-          examiner,
-          question: this.question,
-        });
-      } else {
-        // 초기화
-      }
+      this.socket.game.emit('initQuestion', {
+        examiner,
+        question,
+      });
     },
     handleChangeMessage(e) {
       const { value } = e?.target;
       this.message = value;
-      if (this.question === value) {
-        this.handleGameEnd();
-      }
     },
     handleTextareaShow() {
       this.textareaShow = true;
@@ -185,11 +168,13 @@ const app = new Vue({
 
       if (e.keyCode || clickSendIcon) {
         const { name, thumbnail } = this.loggedUser;
+        const { message } = this;
         const messageInfo = {
           name,
           thumbnail,
           message: this.message,
           createdAt: dateFns.format(new Date(), 'HH:mm'),
+          type: 'message',
         };
 
         this.messages.push(messageInfo);
@@ -203,10 +188,31 @@ const app = new Vue({
           const chatList = document.getElementById('chat-list-box');
           chatList.scrollTop = chatList.scrollHeight;
         }, 0);
+
+        if (this.question === message && this.isGameStart) {
+          this.handleGameEnd();
+          this.handleScore(this.loggedUser.id);
+        }
+      }
+    },
+    handleScore(userId) {
+      this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const originUsers = this.users.filter(user => user.id !== userId);
+      const rightAnswerPerson = this.users.find(user => user.id === userId);
+
+      if (rightAnswerPerson) {
+        rightAnswerPerson.score += 10;
+      }
+
+      this.users = [...originUsers, rightAnswerPerson];
+      if (this.loggedUser.id !== userId) {
+        window.alert(`${rightAnswerPerson.name} got the answer right`);
       }
     },
     createCanvas() {
       let canvas = document.querySelector('canvas');
+      if (!canvas) return;
       const context = canvas.getContext('2d');
       canvas.width = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
@@ -217,11 +223,9 @@ const app = new Vue({
       const gameSocket = io('http://localhost:8000', {
         path: '/websockets/games',
       });
-
       const chatSocket = io('http://localhost:8001', {
         path: '/websockets/chat',
       });
-
       this.socket.game = gameSocket;
       this.socket.chat = chatSocket;
     },
@@ -250,26 +254,27 @@ const app = new Vue({
         }, 0);
       });
 
-      this.socket.game.on('setExaminer', ({ data }) => {
+      this.socket.game.on('initQuestionInfo', ({ data }) => {
         this.examiner = data.examiner;
         this.question = data.question;
+      });
+
+      this.socket.game.on('needsInitQuestionInfo', async () => {
+        const payload = await this.getQuestionInfo();
+        this.socket.game.emit('initQuestionInfo', payload);
       });
 
       this.socket.game.on('gameStart', () => {
         this.isGameStart = true;
       });
 
-      this.socket.game.on('gameEnd', () => {
+      this.socket.game.on('gameEnd', ({ data }) => {
+        this.handleScore(data.userId);
         this.isGameStart = false;
       });
 
       this.socket.game.on('disconnection', async ({ data }) => {
-        const remainUser = this.users;
-        this.users = remainUser;
-        if (data.id === this.examiner.id) {
-          await this.getQuestion();
-          this.handleExaminer();
-        }
+        this.users = data.remainUsers;
       });
     },
     async login() {
@@ -282,25 +287,18 @@ const app = new Vue({
       const {
         data: { users },
       } = await axios.get('http://localhost:3000/api/users');
-      this.users = users.filter(user => user.id !== this.loggedUser.id);
-
-      if (users.length === 1) {
-        await this.getQuestion();
-        this.handleExaminer();
-      }
+      this.users = users;
     },
-    async getQuestion() {
-      const {
-        data: { question },
-      } = await axios.get('http://localhost:3000/api/games/questions');
-      this.question = question;
-    },
-    async getExaminer() {
+    async getQuestionInfo() {
       const {
         data: { payload },
-      } = await axios.get('http://localhost:3000/api/games/examiners');
-      this.examiner = payload.examiner;
-      this.question = payload.question;
+      } = await axios.get('http://localhost:3000/api/games/questions');
+
+      const { examiner, question } = payload;
+      this.examiner = examiner;
+      this.question = question;
+
+      return payload;
     },
     async init() {
       const { family } = platform.os;
@@ -310,10 +308,7 @@ const app = new Vue({
       await this.login();
       await this.getUsers();
       await this.handleSocketController();
-
-      if (!this.examiner?.id) {
-        await this.getExaminer();
-      }
+      await this.getQuestionInfo();
     },
   },
 });

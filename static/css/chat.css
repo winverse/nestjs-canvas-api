@@ -188,6 +188,7 @@
 
 @media (max-width: 1024px) { 
   .right-section {
+    width: 350px;
     padding-top: 10px;
   }
   .logged-user-info-box div {

@@ -30,10 +30,8 @@ $ yarn
 $ yarn run start
 
 # watch mode
-$ yarn run start:dev
+$ yarn start:dev
 
-# production mode
-$ yarn run start:prod
 ```
 
 ## License
